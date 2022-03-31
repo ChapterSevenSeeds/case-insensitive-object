@@ -1,19 +1,19 @@
 class CaseInsensitiveObject {
+    originalKeyMap = {};
     constructor(previousObject) {
         const obj = new Proxy({}, {
-            get: function (target, prop) {
+            get: function (target, prop, receiver) {
                 let key = prop;
                 if (prop.toLowerCase) {
                     key = prop.toLowerCase();
                 } 
     
-                // If the value is an array, it is most likely that we put it there. Treat it as such.
-                if (Array.isArray(target[key])) {
-                    return target[key]?.[1];
+                const lowerCaseGet = Reflect.get(target, key, receiver);
+                if (lowerCaseGet == null) {
+                    return Reflect.get(target, prop, receiver);
                 }
-    
-                // Otherwise, delegate to the prototype.
-                return target.prototype?.[prop];
+
+                return lowerCaseGet;
             },
             set: function (target, prop, value) {
                 let key = prop;
@@ -21,7 +21,8 @@ class CaseInsensitiveObject {
                     key = prop.toLowerCase();
                 }
 
-                return target[key] = [prop, value];
+                originalKeyMap[key] = prop;
+                return target[key] = value;
 
             },
             has: function(target, prop) {
@@ -30,11 +31,7 @@ class CaseInsensitiveObject {
                     key = prop.toLowerCase();
                 }
 
-                if (key in target) {
-                    return true;
-                }
-
-                return key in target.prototype;
+                return key in target || key in target.prototype || prop in target || prop in target.prototype;
             },
             deleteProperty: function(target, prop) {
                 let key = prop;
@@ -42,6 +39,7 @@ class CaseInsensitiveObject {
                     key = prop.toLowerCase();
                 }
 
+                delete originalKeyMap[key];
                 return delete target[key];
             },
             ownKeys: function (target) {
@@ -52,6 +50,12 @@ class CaseInsensitiveObject {
                     enumerable: true,
                     configurable: true,
                 };
+            },
+            defineProperty: function(target, property, attributes) {
+                let key = prop;
+                if (prop.toLowerCase) {
+                    key = prop.toLowerCase();
+                }
             }
         });
 

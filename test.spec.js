@@ -91,4 +91,14 @@ describe("Tests", () => {
         delete obj.asdf;
         expect(obj.asdf).toBe(undefined);
     });
+
+    test("Object.defineProperty", () => {
+        const obj = new CaseInsensitiveObject();
+        Object.defineProperty(obj, "ASDF", {
+            value: 3,
+            writable: false
+        });
+
+        expect(obj.asdf).toBe(3);
+    });
 })
