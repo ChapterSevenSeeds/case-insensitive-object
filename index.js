@@ -1,7 +1,9 @@
 class CaseInsensitiveObject {
-    originalKeyMap = {};
     constructor(previousObject) {
-        const obj = new Proxy({}, {
+        const originalKeyMap = {};
+        const obj = {};
+        Object.setPrototypeOf(obj, CaseInsensitiveObject);
+        const proxy = new Proxy(obj, {
             get: function (target, prop, receiver) {
                 let key = prop;
                 if (prop.toLowerCase) {
@@ -15,14 +17,14 @@ class CaseInsensitiveObject {
 
                 return lowerCaseGet;
             },
-            set: function (target, prop, value) {
+            set: function (target, prop, value, receiver) {
                 let key = prop;
                 if (prop.toLowerCase) {
                     key = prop.toLowerCase();
                 }
 
-                originalKeyMap[key] = prop;
-                return target[key] = value;
+                Reflect.set(originalKeyMap, key, prop, originalKeyMap);
+                return Reflect.set(target, key, value, receiver);
 
             },
             has: function(target, prop) {
@@ -31,7 +33,7 @@ class CaseInsensitiveObject {
                     key = prop.toLowerCase();
                 }
 
-                return key in target || key in target.prototype || prop in target || prop in target.prototype;
+                return Reflect.has(target, key) || Reflect.has(target, prop);
             },
             deleteProperty: function(target, prop) {
                 let key = prop;
@@ -39,35 +41,46 @@ class CaseInsensitiveObject {
                     key = prop.toLowerCase();
                 }
 
-                delete originalKeyMap[key];
-                return delete target[key];
+                Reflect.deleteProperty(originalKeyMap, key);
+                return Reflect.deleteProperty(target, key);
             },
             ownKeys: function (target) {
-                return Object.values(target).map(value => value[0]);
+                return Object.keys(target).map(value => originalKeyMap[value]);
             },
-            getOwnPropertyDescriptor: function() {
-                return {
-                    enumerable: true,
-                    configurable: true,
-                };
-            },
-            defineProperty: function(target, property, attributes) {
+            getOwnPropertyDescriptor: function(target, prop) {
                 let key = prop;
                 if (prop.toLowerCase) {
                     key = prop.toLowerCase();
                 }
+
+                if (key in target) {
+                    return Reflect.getOwnPropertyDescriptor(target, key);
+                }
+
+                return Reflect.getOwnPropertyDescriptor(target, prop);
+            },
+            defineProperty: function(target, prop, attributes) {
+                let key = prop;
+                if (prop.toLowerCase) {
+                    key = prop.toLowerCase();
+                }
+
+                Reflect.defineProperty(originalKeyMap, key, {
+                    ...attributes,
+                    value: prop
+                });
+
+                return Reflect.defineProperty(target, key, attributes);
             }
         });
 
-        Object.setPrototypeOf(obj, CaseInsensitiveObject);
-
-        Object.assign(obj, previousObject);
-        return obj;
+        Object.assign(proxy, previousObject);
+        return proxy;
     }
 
     toString() {
         return "[object CaseInsensitiveObject]";
-    }
+    };
 }
 
 module.exports = CaseInsensitiveObject;

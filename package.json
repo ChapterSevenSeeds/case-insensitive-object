@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/ChapterSevenSeeds/case-insensitive-object/issues"
   },
-  "homepage": "https://github.com/ChapterSevenSeeds/case-insensitive-object#readme"
+  "homepage": "https://github.com/ChapterSevenSeeds/case-insensitive-object#readme",
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
 }
