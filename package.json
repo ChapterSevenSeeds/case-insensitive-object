@@ -1,6 +1,6 @@
 {
   "name": "case-insensitive-object2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Enables the creation of a JavaScript object whose keys are case insensitive.",
   "main": "index.js",
   "module": "index.js",

@@ -90,5 +90,5 @@ describe("Tests", () => {
 
         delete obj.asdf;
         expect(obj.asdf).toBe(undefined);
-    })
+    });
 })
