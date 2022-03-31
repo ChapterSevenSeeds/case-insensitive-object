@@ -1,53 +1,69 @@
-const handler = {
-    get: function (target, prop) {
-        let lowercase;
-        if (prop.toLowerCase) {
-            lowercase = prop.toLowerCase();
-        }
+class CaseInsensitiveObject {
+    constructor(previousObject) {
+        const obj = new Proxy({}, {
+            get: function (target, prop) {
+                let key = prop;
+                if (prop.toLowerCase) {
+                    key = prop.toLowerCase();
+                } 
+    
+                // If the value is an array, it is most likely that we put it there. Treat it as such.
+                if (Array.isArray(target[key])) {
+                    return target[key]?.[1];
+                }
+    
+                // Otherwise, delegate to the prototype.
+                return target.prototype?.[prop];
+            },
+            set: function (target, prop, value) {
+                let key = prop;
+                if (prop.toLowerCase) {
+                    key = prop.toLowerCase();
+                }
 
-        if (Array.isArray(target[prop])) {
-            return target.actual[lowercase]?.[1];
-        } else if (typeof(target.prototype[prop]) === "function") {
-            const returnFunction = target.prototype[prop].bind(target);
-            return returnFunction;
-        }
-    },
-    set: function (target, prop, value) {
-        const lowercase = prop.toLowerCase();
-        target.actual[lowercase] = [prop, value];
-        target.pretty[prop] = value;
-        return true;
-    },
-    ownKeys: function (target) {
-        return Object.getOwnPropertyNames(target.pretty);
-    },
-    getOwnPropertyDescriptor: function() {
-        return {
-            enumerable: true,
-            configurable: true,
-        };
+                return target[key] = [prop, value];
+
+            },
+            has: function(target, prop) {
+                let key = prop;
+                if (prop.toLowerCase) {
+                    key = prop.toLowerCase();
+                }
+
+                if (key in target) {
+                    return true;
+                }
+
+                return key in target.prototype;
+            },
+            deleteProperty: function(target, prop) {
+                let key = prop;
+                if (prop.toLowerCase) {
+                    key = prop.toLowerCase();
+                }
+
+                return delete target[key];
+            },
+            ownKeys: function (target) {
+                return Object.values(target).map(value => value[0]);
+            },
+            getOwnPropertyDescriptor: function() {
+                return {
+                    enumerable: true,
+                    configurable: true,
+                };
+            }
+        });
+
+        Object.setPrototypeOf(obj, CaseInsensitiveObject);
+
+        Object.assign(obj, previousObject);
+        return obj;
     }
-};
 
-module.exports = class CaseInsensitiveObject extends Object {
-    proxy;
-    constructor() {
-        super();
-        this.proxy = new Proxy({
-            actual: {},
-            pretty: {}
-        }, handler);
-
-        Object.setPrototypeOf(this.proxy, CaseInsensitiveObject);
-
-        return this.proxy;
-    }
-
-    /* toString() {
-        return "d"
-    } */
-
-    [Symbol.toPrimitive](type) {
-        return this.pretty.toString();
+    toString() {
+        return "[object CaseInsensitiveObject]";
     }
 }
+
+module.exports = CaseInsensitiveObject;
