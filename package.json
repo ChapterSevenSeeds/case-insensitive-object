@@ -23,6 +23,9 @@
   },
   "homepage": "https://github.com/ChapterSevenSeeds/case-insensitive-object#readme",
   "devDependencies": {
-    "jest": "^27.5.1"
+    "case-insensitive-object": "^0.1.5",
+    "jest": "^27.5.1",
+    "pretty-ms": "^7.0.1",
+    "uuid": "^8.3.2"
   }
 }
