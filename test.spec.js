@@ -1,3 +1,5 @@
+"use strict"
+
 const CaseInsensitiveObject = require("./index");
 
 describe("Tests", () => {
@@ -50,7 +52,7 @@ describe("Tests", () => {
         const obj = new CaseInsensitiveObject();
         expect(obj.toString()).toBe("[object CaseInsensitiveObject]");
         Object.preventExtensions(obj);
-        expect(() => obj[3] = 3).toThrow();
+        expect(() => Object.defineProperties(obj, "hello", { value: 3 })).toThrow();
     });
 
     test("In operator", () => {
@@ -100,5 +102,6 @@ describe("Tests", () => {
         });
 
         expect(obj.asdf).toBe(3);
+        expect(() => obj['asdf'] = 5).toThrow();
     });
 })

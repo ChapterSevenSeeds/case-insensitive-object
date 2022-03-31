@@ -1,5 +1,4 @@
-import CaseInsensitiveObject from "./index";
-
 declare module "case-insensitive-object2" {
-    export default CaseInsensitiveObject;
+    declare class CaseInsensitiveObject extends Object {};
+    export default function CaseInsensitiveObject(previousObject?: any): CaseInsensitiveObject;
 }
