@@ -1,11 +1,12 @@
 {
   "name": "case-insensitive-object2",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Enables the creation of a JavaScript object whose keys are case insensitive.",
   "main": "index.js",
   "module": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "bench": "node benches.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,6 @@
   },
   "homepage": "https://github.com/ChapterSevenSeeds/case-insensitive-object#readme",
   "devDependencies": {
-    "case-insensitive-object": "^0.1.5",
     "jest": "^27.5.1",
     "pretty-ms": "^7.0.1",
     "uuid": "^8.3.2"

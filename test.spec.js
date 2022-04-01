@@ -30,6 +30,10 @@ describe("Tests", () => {
         expect(obj["qWe"]).toBe(90);
         expect(obj.TYE).toBe(100);
         expect(obj["tyE"]).toBe(100);
+
+        obj.hello = new CaseInsensitiveObject();
+        obj.HELLO.asdf = 3;
+        expect(obj.hello.ASDF).toBe(3);
     });
 
     test("Object.assign", () => {
@@ -59,6 +63,7 @@ describe("Tests", () => {
         const obj = new CaseInsensitiveObject();
         obj["HEllO"] = {};
         expect("hello" in obj).toBe(true);
+        expect("toString" in obj).toBe(true);
     });
 
     test("Key iterability with original casing", () => {
@@ -70,7 +75,6 @@ describe("Tests", () => {
 
         expect(Object.keys(obj)).toStrictEqual(["a", "b", "C", "DD"]);
     });
-
 
     test("Initialize with previously existing object", () => {
         const obj2 = {

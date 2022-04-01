@@ -6,7 +6,7 @@ class CaseInsensitiveObject {
 
 module.exports = function(previousObject) {
     const originalKeyMap = {};
-    const proxy = new Proxy(new CaseInsensitiveObject, {
+    const proxy = new Proxy(new CaseInsensitiveObject(), {
         get: function (target, prop, receiver) {
             let key = prop;
             if (prop.toLowerCase) {
@@ -22,7 +22,6 @@ module.exports = function(previousObject) {
         },
         set: function (target, prop, value, receiver) {  
             return Reflect.set(target, prop, value, receiver);
-    
         },
         has: function(target, prop) {
             let key = prop;
